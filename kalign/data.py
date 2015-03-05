@@ -32,7 +32,8 @@ class Kdata():
         else:
             raise "Unsupported file"
 
-        self.wave_data = wave_data
+        self.sampling_rate = int(wave_data[0])
+        self.wave_data = wave_data[1]
         self.filename = filename
 
     def read_wav(self, filename):
@@ -85,17 +86,34 @@ class Kdata():
         stream.close()
         p.terminate()
 
+    def plotSpec(self):
+        from pylab import specgram
+        from pylab import show
+
+        specgram(
+            self.wave_data,
+            NFFT=256,
+            Fs=self.sampling_rate,
+            noverlap=10)
+        show()
+
 # data.py ends here
 
 if __name__ == "__main__":
-    import sys
-    import glob
-    pathname = sys.argv[1]
-    extension_list = map(lambda x: "*." + x, Kdata.supported_file_types)
-    os.chdir(pathname)
-    for extension in extension_list:
-        for video in glob.glob(extension):
-            if video[0] == "_":
-                continue
-            print "Opening filename {0}".format(video)
-            Kdata(video)
+    robin = Kdata("/Users/jonomon/Desktop/fil.mp3")
+    robin.plotSpec()
+#     import sys
+#     import glob
+#     pathname = sys.argv[1]
+#     extension_list = map(lambda x: "*." + x, Kdata.supported_file_types)
+#     os.chdir(pathname)
+#     for extension in extension_list:
+#         for video in glob.glob(extension):
+#             if video[0] == "_":
+#                 continue
+#             print "Opening filename {0}".format(video)
+#             Kdata(video)
+
+
+
+
