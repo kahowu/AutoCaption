@@ -9,11 +9,29 @@
 # Package-Requires: (pydub, pyaudio, ffmpeg, scipy)
 
 # Code:
+from __future__ import division
 
-import pyaudio
 from scipy.io import wavfile
 import wave
 import os
+import glob
+
+class Kdatas():
+    '''
+    docs
+    '''
+    def __init__(self, directory, is_mk1_data = False, debug=False):
+        self.kdatas = []
+        extension_list = map(lambda x: "*." + x, Kdata.supported_file_types)
+        os.chdir(directory)
+        for extension in extension_list:
+            for video in glob.glob(extension):
+                if video[0] == "_":
+                    continue
+                if debug:
+                    print "Opening filename {0}".format(video)
+                data = Kdata(video, is_mk1_data=is_mk1_data)
+                self.kdatas.append(data)
 
 class Kdata():
     '''
@@ -22,19 +40,29 @@ class Kdata():
     required_properties = {"frame_rate": 16,
                            "channels": 1,
                            "no_frames": 16}
-    supported_file_types = ["mp3", "ogg", "flv", "mp4", "wma", "aac"]
-    def __init__(self, filename):
+    supported_file_types = ["wav", "mp3", "ogg", "flv", "mp4", "wma", "aac"]
+    def __init__(self, filename, is_mk1_data = False):
+        if is_mk1_data:
+            vocal, background = self._separate_wav_channel(filename)
+            self.vocal = vocal
+            self.background = background
         filetype = filename[-3:]
-        if ".wav" == filetype:
-            wave_data, filename = self.read_wav(filename)
+        if "wav" == filetype:
+            wave_data, filename, sample_width = self.read_wav(filename)
         elif filetype in self.supported_file_types:
-            wave_data, filename = self.convert_audio_to_wav(filename)
+            new_filename = self._convert_filename(filename)
+            if os.path.isfile(new_filename):
+                wave_data, filename, sample_width = self.read_wav(new_filename)
+            else:
+                wave_data, filename, sample_width = self.convert_audio_to_wav(filename)
         else:
             raise "Unsupported file"
 
-        self.sampling_rate = int(wave_data[0])
+        self.is_mk1_data = is_mk1_data
+        self.fs = int(wave_data[0])
         self.wave_data = wave_data[1]
         self.filename = filename
+        self.sample_width = sample_width
 
     def read_wav(self, filename):
         # Check properties of the wave file
@@ -46,46 +74,63 @@ class Kdata():
         if self.required_properties == wav_properties:
             wave_data = wavfile.read(filename)
             filename = filename
+            sample_width = wav_file.getsampwidth()
         else:
-            wave_data, filename = self.convert_audio_to_wav(filename)
-        return wave_data, filename
+            wave_data, filename, sample_width = self.convert_audio_to_wav(filename)
+        return wave_data, filename, sample_width
 
-    def convert_filename(self, filename):
+    @staticmethod
+    def _convert_filename(filename):
         path, filename = os.path.split(filename)
         if path == '':
             path = os.getcwd()
         return path + "/_" + filename[0:-3] + "wav"
 
+    @staticmethod
+    def _separate_wav_channel(filename):
+        wave_data = wavfile.read(filename)
+        vocal = wave_data[1][:, 0]
+        background = wave_data[1][:, 1]
+        return vocal, background
+        
     def convert_audio_to_wav(self, filename):
         filetype = filename[-3:]
-        new_filename = self.convert_filename(filename)
+        new_filename = self._convert_filename(filename)
         from pydub import AudioSegment
         supported_file = AudioSegment.from_file(filename, filetype)
-        supported_file = supported_file.set_frame_rate(self.required_properties["frame_rate"])
-        supported_file = supported_file.set_channels(self.required_properties["channels"])
-        # supported_file = supported_file.frame_count(self.required_properties["no_frames"])
+        if supported_file.frame_rate / 1000 != self.required_properties["frame_rate"]:
+            supported_file = supported_file.set_frame_rate(1000 * self.required_properties["frame_rate"])
+        if supported_file.channels != self.required_properties["channels"]:     
+            supported_file = supported_file.set_channels(self.required_properties["channels"])
+        sample_width = supported_file.sample_width
         supported_file.export(new_filename, format="wav")
         wave_data = wavfile.read(new_filename)
         filename = new_filename
-        return wave_data, filename
-
-    def play(self):
-        wav_file = wave.open(self.filename)
-        chunk = 1024
-        p = pyaudio.PyAudio()
+        return wave_data, filename, sample_width
+    
+    def play(self, data_type="combined"):
+        if data_type != "combined" and not self.is_mk1_data:
+            raise "Error, {0} does not exist".format(data_type)
+        data_conv = {
+            "combined": self.wave_data,
+            "vocal": self.vocal,
+            "background": self.background
+        }
+        data = data_conv[data_type].tostring()
+                
+        from pyaudio import PyAudio
+        p = PyAudio()
         stream = p.open(
-            format=p.get_format_from_width(wav_file.getsampwidth()),
-            channels=wav_file.getnchannels(),
-            rate=wav_file.getframerate(),
+            format=p.get_format_from_width(self.sample_width),
+            channels=self.required_properties["channels"],
+            rate=self.fs,
             output=True)
-        data = wav_file.readframes(chunk)
-        while data != '':
-            stream.write(data)
-            data = wav_file.readframes(chunk)
+
+        stream.write(data)
         stream.stop_stream()
         stream.close()
         p.terminate()
-
+    
     def plotSpec(self):
         from pylab import specgram
         from pylab import show
@@ -93,27 +138,8 @@ class Kdata():
         specgram(
             self.wave_data,
             NFFT=256,
-            Fs=self.sampling_rate,
+            Fs=self.fs,
             noverlap=10)
         show()
 
 # data.py ends here
-
-if __name__ == "__main__":
-    robin = Kdata("/Users/jonomon/Desktop/fil.mp3")
-    robin.plotSpec()
-#     import sys
-#     import glob
-#     pathname = sys.argv[1]
-#     extension_list = map(lambda x: "*." + x, Kdata.supported_file_types)
-#     os.chdir(pathname)
-#     for extension in extension_list:
-#         for video in glob.glob(extension):
-#             if video[0] == "_":
-#                 continue
-#             print "Opening filename {0}".format(video)
-#             Kdata(video)
-
-
-
-
