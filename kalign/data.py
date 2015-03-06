@@ -33,9 +33,9 @@ class Kdatabase():
                 data = Kdata(video, is_mk1_data=is_mk1_data)
                 self._kdatas.append(data)
 
-    def get_data(self, kstring="original"):
-        import pdb; pdb.set_trace();
-        yield map(lambda x: x[kstring], self._kdatas)
+    def get_data(self, kstring="input"):
+        for kdata in self._kdatas:
+            yield kdata[kstring]
     
     def _check_name_exist(self, kstring):
         return kstring in self._kdatas[0].data.keys
@@ -52,11 +52,11 @@ class Kdata():
                            "no_frames": 16}
     supported_file_types = ["wav", "mp3", "ogg", "flv", "mp4", "wma", "aac"]
     def __init__(self, filename, is_mk1_data = False):
-        self.data = {}
+        self._data = {}
         if is_mk1_data:
             vocal, background = self._separate_wav_channel(filename)
-            self.data["vocal"] = vocal
-            self.data["background"] = background
+            self._data["vocal"] = vocal
+            self._data["background"] = background
         filetype = filename[-3:]
         if "wav" == filetype:
             wave_data, filename, sample_width = self.read_wav(filename)
@@ -71,9 +71,12 @@ class Kdata():
 
         self.is_mk1_data = is_mk1_data
         self.fs = int(wave_data[0])
-        self.data["input"] = wave_data[1]
+        self._data["input"] = wave_data[1]
         self.filename = filename
         self.sample_width = sample_width
+
+    def __getitem__(self, kstring):
+        return self._data[kstring]
 
     def read_wav(self, filename):
         # Check properties of the wave file
@@ -119,10 +122,10 @@ class Kdata():
         filename = new_filename
         return wave_data, filename, sample_width
     
-    def play(self, data_type="original"):
+    def play(self, data_type="input"):
         if data_type != "combined" and not self.is_mk1_data:
             raise "Error, {0} does not exist".format(data_type)
-        data = self.data[data_type].tostring()
+        data = self._data[data_type].tostring()
                 
         from pyaudio import PyAudio
         p = PyAudio()
@@ -137,12 +140,12 @@ class Kdata():
         stream.close()
         p.terminate()
     
-    def plotSpec(self, data_type="original"):
+    def plotSpec(self, data_type="input"):
         from pylab import specgram
         from pylab import show
 
         specgram(
-            self.data[data_type],
+            self._data[data_type],
             NFFT=256,
             Fs=self.fs,
             noverlap=10)
