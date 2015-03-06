@@ -1,5 +1,7 @@
-from data import Kdatas
+from data import Kdatabase
 
 if __name__ == "__main__":
-    kdatas = Kdatas("../data", is_mk1_data=True)
-    import pdb; pdb.set_trace();
+    kdatabase = Kdatabase("../data", is_mk1_data=True)
+    for i in kdatabase.get_data():
+        import pdb; pdb.set_trace();
+    

@@ -16,12 +16,12 @@ import wave
 import os
 import glob
 
-class Kdatas():
+class Kdatabase():
     '''
     docs
     '''
     def __init__(self, directory, is_mk1_data = False, debug=False):
-        self.kdatas = []
+        self._kdatas = []
         extension_list = map(lambda x: "*." + x, Kdata.supported_file_types)
         os.chdir(directory)
         for extension in extension_list:
@@ -31,7 +31,17 @@ class Kdatas():
                 if debug:
                     print "Opening filename {0}".format(video)
                 data = Kdata(video, is_mk1_data=is_mk1_data)
-                self.kdatas.append(data)
+                self._kdatas.append(data)
+
+    def get_data(self, kstring="original"):
+        import pdb; pdb.set_trace();
+        yield map(lambda x: x[kstring], self._kdatas)
+    
+    def _check_name_exist(self, kstring):
+        return kstring in self._kdatas[0].data.keys
+
+    def _get_all_name(self):
+        return self._kdatas[0].data.keys
 
 class Kdata():
     '''
@@ -42,10 +52,11 @@ class Kdata():
                            "no_frames": 16}
     supported_file_types = ["wav", "mp3", "ogg", "flv", "mp4", "wma", "aac"]
     def __init__(self, filename, is_mk1_data = False):
+        self.data = {}
         if is_mk1_data:
             vocal, background = self._separate_wav_channel(filename)
-            self.vocal = vocal
-            self.background = background
+            self.data["vocal"] = vocal
+            self.data["background"] = background
         filetype = filename[-3:]
         if "wav" == filetype:
             wave_data, filename, sample_width = self.read_wav(filename)
@@ -60,7 +71,7 @@ class Kdata():
 
         self.is_mk1_data = is_mk1_data
         self.fs = int(wave_data[0])
-        self.wave_data = wave_data[1]
+        self.data["input"] = wave_data[1]
         self.filename = filename
         self.sample_width = sample_width
 
@@ -108,15 +119,10 @@ class Kdata():
         filename = new_filename
         return wave_data, filename, sample_width
     
-    def play(self, data_type="combined"):
+    def play(self, data_type="original"):
         if data_type != "combined" and not self.is_mk1_data:
             raise "Error, {0} does not exist".format(data_type)
-        data_conv = {
-            "combined": self.wave_data,
-            "vocal": self.vocal,
-            "background": self.background
-        }
-        data = data_conv[data_type].tostring()
+        data = self.data[data_type].tostring()
                 
         from pyaudio import PyAudio
         p = PyAudio()
@@ -131,12 +137,12 @@ class Kdata():
         stream.close()
         p.terminate()
     
-    def plotSpec(self):
+    def plotSpec(self, data_type="original"):
         from pylab import specgram
         from pylab import show
 
         specgram(
-            self.wave_data,
+            self.data[data_type],
             NFFT=256,
             Fs=self.fs,
             noverlap=10)
