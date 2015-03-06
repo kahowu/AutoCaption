@@ -1,0 +1,79 @@
+INFO: cmd_ln.c(697): Parsing command line:
+sphinx_fe \
+	-c /Users/Jeff/Desktop/412project/project/autocap/autocaplm/etc/bob_dylan_train.fileids \
+	-part 1 \
+	-npart 1 \
+	-di /Users/Jeff/Desktop/412project/project/autocap/autocaplm/wav \
+	-ei wav \
+	-do /Users/Jeff/Desktop/412project/project/autocap/autocaplm/feat \
+	-eo mfc \
+	-nist no \
+	-raw no \
+	-mswav yes \
+	-samprate 16000 \
+	-lowerf 130 \
+	-upperf 6800 \
+	-nfilt 25 \
+	-transform dct \
+	-lifter 22 \
+	-ncep 13 
+
+Current configuration:
+[NAME]		[DEFLT]		[VALUE]
+-alpha		0.97		9.700000e-01
+-argfile			
+-blocksize	2048		2048
+-build_outdirs	yes		yes
+-c				/Users/Jeff/Desktop/412project/project/autocap/autocaplm/etc/bob_dylan_train.fileids
+-cep2spec	no		no
+-di				/Users/Jeff/Desktop/412project/project/autocap/autocaplm/wav
+-dither		no		no
+-do				/Users/Jeff/Desktop/412project/project/autocap/autocaplm/feat
+-doublebw	no		no
+-ei				wav
+-eo				mfc
+-example	no		no
+-frate		100		100
+-help		no		no
+-i				
+-input_endian	little		little
+-lifter		0		22
+-logspec	no		no
+-lowerf		133.33334	1.300000e+02
+-mach_endian	little		little
+-mswav		no		yes
+-ncep		13		13
+-nchans		1		1
+-nfft		512		512
+-nfilt		40		25
+-nist		no		no
+-npart		0		1
+-nskip		0		0
+-o				
+-ofmt		sphinx		sphinx
+-part		0		1
+-raw		no		no
+-remove_dc	no		no
+-remove_noise	yes		yes
+-remove_silence	yes		yes
+-round_filters	yes		yes
+-runlen		-1		-1
+-samprate	16000		1.600000e+04
+-seed		-1		-1
+-smoothspec	no		no
+-spec2cep	no		no
+-sph2pipe	no		no
+-transform	legacy		dct
+-unit_area	yes		yes
+-upperf		6855.4976	6.800000e+03
+-vad_postspeech	50		50
+-vad_prespeech	10		10
+-vad_threshold	2.0		2.000000e+00
+-verbose	no		no
+-warp_params			
+-warp_type	inverse_linear	inverse_linear
+-whichchan	0		0
+-wlen		0.025625	2.562500e-02
+
+INFO: sphinx_fe.c(1047): Processing all remaining utterances at position 0
+Thu Mar  5 22:15:17 2015
