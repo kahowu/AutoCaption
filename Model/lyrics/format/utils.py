@@ -3,14 +3,14 @@ import os.path
 def remove_extension(file_name):
     return os.path.splitext(file_name)[0]
 
-def replace_char(chars, str):
+def remove_char(chars, str):
     new_line = str
     for c in chars:
         new_line = new_line.replace(c, '')
     return new_line
 
 def normalize_string(str):
-    return remove_extra_whitespace(replace_char(",.':;?\"@#$%^&*()-+=<>{}[]", str))
+    return remove_extra_whitespace(remove_char(",.':;?\"@#$%^&*()-+=<>{}[]", str))
 
 def remove_marginal_whitespace(str):
     if len(str) == 0:
