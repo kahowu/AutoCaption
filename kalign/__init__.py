@@ -25,3 +25,5 @@
 
 from data import Kdata
 from data import Kdatabase
+
+from utils.pyNumpyViewer import pyNumpyViewer
