@@ -1,3 +1,14 @@
+# pyNumpyViewer.py --- 
+# 
+# Filename: pyNumpyViewer.py
+# Description: 
+# Author: Jonathan Chung
+# Maintainer: 
+# Created: Mon Mar  9 17:34:33 2015 (-0400)
+# Version: 
+# Package-Requires: (numpy)
+# Code:
+
 import os
 import webbrowser
 import numpy as np
@@ -58,17 +69,11 @@ class pyNumpyViewer():
             table_body_string += '<tr>'
             table_body_string += '<td>' + str(row) + '</td>' # display the index
             if no_col == 0: # display the data for 1D array
-                table_body_string += '<td>' + str(np.around(data[row], 1)) + '</td>'
+                table_body_string += '<td>' + str(np.around(data[row], 3)) + '</td>'
             for col in range(0, no_col): #display the data for 2D array
-                table_body_string += '<td>' + str(np.around(data[row][col], 1)) + '</td>'
+                table_body_string += '<td>' + str(np.around(data[row][col], 3)) + '</td>'
             table_body_string += '</tr>'
         table_body_string += '</tbody>'
         return table_body_string
-
-
-
-
-
-
-
-
+# 
+# pyNumpyViewer.py ends here

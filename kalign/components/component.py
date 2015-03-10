@@ -8,6 +8,9 @@
 # Version: 
 # Package-Requires: ()
 
+from data import Kdatabase
+from data import Kdata
+
 # Code:
 class Kcomponent():
     '''
@@ -17,6 +20,11 @@ class Kcomponent():
         pass
 
     def run(self, kdatas):
-        pass
+        if isinstance(kdatas, Kdatabase):
+            for kdata in kdatas:
+                self.component(kdata)
+        else:
+            kdata = kdatas
+            self.component(kdata)
 
 # component.py ends here

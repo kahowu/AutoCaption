@@ -33,6 +33,10 @@ class Kdatabase():
                 data = Kdata(video, is_mk1_data=is_mk1_data)
                 self._kdatas.append(data)
 
+    def get(self):
+        for kdata in self._kdatas:
+            yield kdata
+
     def get_data(self, kstring="input"):
         for kdata in self._kdatas:
             yield kdata[kstring]
@@ -71,12 +75,15 @@ class Kdata():
 
         self.is_mk1_data = is_mk1_data
         self.fs = int(wave_data[0])
-        self._data["input"] = wave_data[1]
+        self._data["input"] = wave_data[1] / max(abs(wave_data[1])) # normalise
         self.filename = filename
         self.sample_width = sample_width
 
     def __getitem__(self, kstring):
         return self._data[kstring]
+
+    def __setitem__(self, kstring, val):
+        self._data[kstring] = val
 
     def read_wav(self, filename):
         # Check properties of the wave file
@@ -123,10 +130,10 @@ class Kdata():
         return wave_data, filename, sample_width
     
     def play(self, data_type="input"):
-        if data_type != "combined" and not self.is_mk1_data:
+        if data_type != "input" and self.is_mk1_data:
             raise "Error, {0} does not exist".format(data_type)
+  
         data = self._data[data_type].tostring()
-                
         from pyaudio import PyAudio
         p = PyAudio()
         stream = p.open(
@@ -150,5 +157,9 @@ class Kdata():
             Fs=self.fs,
             noverlap=10)
         show()
+
+    def view(self, data_type="input"):
+        from utils.pyNumpyViewer import pyNumpyViewer
+        pyNumpyViewer(self._data[data_type])
 
 # data.py ends here
