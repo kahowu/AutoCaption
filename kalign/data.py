@@ -75,7 +75,8 @@ class Kdata():
 
         self.is_mk1_data = is_mk1_data
         self.fs = int(wave_data[0])
-        self._data["input"] = wave_data[1] / max(abs(wave_data[1])) # normalise
+        self.normaliser = max(abs(wave_data[1]))
+        self._data["input"] = wave_data[1] /  self.normaliser
         self.filename = filename
         self.sample_width = sample_width
 
@@ -132,8 +133,11 @@ class Kdata():
     def play(self, data_type="input"):
         if data_type != "input" and self.is_mk1_data:
             raise "Error, {0} does not exist".format(data_type)
-  
-        data = self._data[data_type].tostring()
+
+        data = self._data[data_type] * self.normaliser
+        import numpy as np
+        data_int = data.astype(np.int16)
+        data_play = data_int.tostring()
         from pyaudio import PyAudio
         p = PyAudio()
         stream = p.open(
@@ -142,7 +146,7 @@ class Kdata():
             rate=self.fs,
             output=True)
 
-        stream.write(data)
+        stream.write(data_play)
         stream.stop_stream()
         stream.close()
         p.terminate()

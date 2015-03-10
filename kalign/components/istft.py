@@ -14,21 +14,24 @@ from scipy import hamming
 from scipy import fft
 from scipy import real
 import numpy as np
+from utils.pyNumpyViewer import pyNumpyViewer
 
 class Istft(Kcomponent):
     '''
     docs
     '''
     def __init__(self, lamb=1, nfft=1024, overlap=4, scf=0.666):
-        self.name = "istft"
         self.lamb = lamb
         self.nfft = nfft
         self.hop = nfft / overlap
         self.scf = scf
         
     def component(self, kdata):
-        X = kdata["rpca_l"]
+        self.istft(kdata, "rpca_e", "vocal")
+        self.istft(kdata, "rpca_a", "instrumental")
 
+    def istft(self, kdata, input_type, output_name):
+        X = kdata[input_type]
         fftsize = self.nfft
         w = hamming(fftsize + 1)[:-1]
         x = np.zeros(X.shape[0] * self.hop)
@@ -38,7 +41,6 @@ class Istft(Kcomponent):
             wsum[i:i + fftsize] += w ** 2.
         pos = wsum != 0
         x[pos] /= wsum[pos]
-        x = x.astype(np.int16)
-        kdata[self.name] = x
+        kdata[output_name] = x
 
 # istft.py ends here

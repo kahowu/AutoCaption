@@ -21,7 +21,7 @@ class pyNumpyViewer():
         self.checkData(data)
         html = self.generateHTML(data)
 
-        path = os.path.abspath('temp.html')
+        path = os.path.abspath('__temp.html')
         with open(path, 'w') as f:
             f.write(html)
         url = 'file://' + path
