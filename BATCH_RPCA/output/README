@@ -1,5 +1,0 @@
-Instruction
-
-1. Take all the .wav files from UndividedWavFiles in M1R-K dataset and put them in the "music" folder 
-2. run separation.m 
-3. run rpca_batch.m
