@@ -98,45 +98,28 @@ public class AlignerRunner {
     }
     
     public static double align(String songFilepath, String lyricsFilepath, String outputFilepath, String dictionaryPath) throws IOException {
-    	URL audioUrl;
-        
-        String lyrics;
-        
+    	URL audioUrl;       
+        String lyrics;     
     	File songFile = new File(songFilepath);
         audioUrl = new URL("file:" + songFile.getAbsolutePath());
-        
-//        System.out.println(audioUrl);
         lyrics = new String(Files.readAllBytes(Paths.get(lyricsFilepath)));
-//        System.out.println(lyrics);
         String acousticModelPath = ACOUSTIC_MODEL_PATH;
-//        System.out.println(dictionaryPath);
         String g2pPath = null;
-       
         SpeechAligner aligner =
                 new SpeechAligner(acousticModelPath, dictionaryPath, g2pPath);
-
         List<WordResult> results = aligner.align(audioUrl, lyrics);
         List<String> stringResults = new ArrayList<String>();
         for (WordResult wr : results) {
             stringResults.add(wr.getWord().getSpelling());
         }
-        
         LongTextAligner textAligner =
                 new LongTextAligner(stringResults, 2);
         List<String> words = aligner.getWordExpander().expand(lyrics);
-
         int[] aid = textAligner.align(words);
-        
     	PrintWriter writer = new PrintWriter(outputFilepath, "UTF-8");
-        
         int totalCorrect = 0;
         int lastId = -1;
 
-// 		  Print out the results from aligner
-//        for (int i = 0; i < aid.length; ++i) {
-//        	System.out.println(i + ", " + aid[i]);
-//        }
-//        
         for (int i = 0; i < aid.length; ++i) {
             if (aid[i] == -1) {
                 System.out.format("- %s\n", words.get(i));
@@ -158,7 +141,7 @@ public class AlignerRunner {
             }
             writer.flush();
         }
-        
+        writer.write("WER: " + (1 - (totalCorrect * 1.0)/aid.length));
         writer.close();
 
         if (lastId >= 0 && results.size() - lastId > 1) {
@@ -170,6 +153,5 @@ public class AlignerRunner {
         }
         
         return (1 - (totalCorrect * 1.0)/aid.length); 
-//        System.out.println("Rate: " + ((totalCorrect * 1.0)/aid.length));
     }
 }
