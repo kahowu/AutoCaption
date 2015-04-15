@@ -1,0 +1,4 @@
+1. Put mono, 16000Hz, 16 bit original tracks into the "music" folder
+2. Put original instrumental and vocal into "original_instrumental" and "original_vocal" folders
+3. Put RPCA instrumental and vocal into "rpca_instrumental" and "rpca_vocal" folders
+4. Run "batch_bss.m" and results will be stored in "out.csv"
