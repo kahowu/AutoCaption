@@ -1,6 +1,6 @@
-folder = '/Users/Jeff/Desktop/LM/CC/original/';
+folder = 'original/';
 % v_folder = '/Users/Jeff/Desktop/LM/CC/vocal/';
-i_folder = '/Users/Jeff/Desktop/LM/CC/output/';
+i_folder = 'output/';
 ext = '*.wav';
 content = strcat (folder, ext); 
 files = dir(content);
