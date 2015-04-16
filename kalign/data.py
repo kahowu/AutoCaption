@@ -51,7 +51,7 @@ class Kdata():
     '''
     docs
     '''
-    required_properties = {"frame_rate": 16,
+    required_properties = {"frame_rate": 22,
                            "channels": 1,
                            "no_frames": 16}
     supported_file_types = ["wav", "mp3", "ogg", "flv", "mp4", "wma", "aac"]
@@ -150,17 +150,11 @@ class Kdata():
         stream.stop_stream()
         stream.close()
         p.terminate()
-    
-    def plotSpec(self, data_type="input"):
-        from pylab import specgram
-        from pylab import show
 
-        specgram(
-            self._data[data_type],
-            NFFT=256,
-            Fs=self.fs,
-            noverlap=10)
-        show()
+    def save(self, filename, data_type="input"):
+        from scipy.io import wavfile
+        rate = 22050
+        wavfile.write(filename, rate, self._data[data_type])
 
     def view(self, data_type="input"):
         from utils.pyNumpyViewer import pyNumpyViewer
