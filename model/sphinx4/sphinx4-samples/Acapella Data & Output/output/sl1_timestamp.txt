@@ -1,0 +1,9 @@
+our	10:210
+hopes	650:920
+and	1470:3130
+expectations
+black
+holes
+and
+revelations
+WER: 0.625

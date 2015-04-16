@@ -1,0 +1,16 @@
+yes	40:160
+and	160:400
+how	490:1010
+many	1010:1400
+years	1400:1950
+can	2360:2840
+some	2840:3060
+people	3240:6080
+exist	6080:6840
+before
+they're
+allowed
+to
+be
+free
+WER: 0.4

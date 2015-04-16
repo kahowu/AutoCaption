@@ -1,0 +1,34 @@
+it's
+you	320:600
+it's	1150:1380
+you	320:600
+it's	1150:1380
+all	2460:3190
+for	4280:4310
+you	4370:4680
+everything	4740:4900
+i	5850:5960
+do	6230:6640
+i
+tell
+you
+all
+the
+time	7280:7570
+heaven	9200:9790
+is	9790:10020
+a	10020:10100
+place	10100:10790
+on
+earth
+with
+you
+tell
+me
+all
+the
+things
+you
+wanna
+do
+WER: 0.5454545454545454

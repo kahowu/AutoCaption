@@ -158,7 +158,7 @@ public class SpeechAligner {
                 }
                 int[] alignment = aligner.align(words, range);
                 
-                System.out.println(Arrays.toString(words.toArray()));
+//                System.out.println(Arrays.toString(words.toArray()));
 
                 List<WordResult> results = hypothesis;
 
