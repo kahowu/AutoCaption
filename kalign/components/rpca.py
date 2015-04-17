@@ -13,7 +13,7 @@ from component import Kcomponent
 import math
 import numpy as np
 import irlb
-from utils.pyNumpyViewer import pyNumpyViewer
+from pyNumpyViewer import pyNumpyViewer
 
 class Rpca(Kcomponent):
     '''

@@ -15,6 +15,7 @@ from scipy.io import wavfile
 import wave
 import os
 import glob
+import matplotlib.pyplot as plt
 
 class Kdatabase():
     '''
@@ -51,9 +52,8 @@ class Kdata():
     '''
     docs
     '''
-    required_properties = {"frame_rate": 22,
-                           "channels": 1,
-                           "no_frames": 16}
+    required_properties = {"frame_rate": 16,
+                           "channels": 1}
     supported_file_types = ["wav", "mp3", "ogg", "flv", "mp4", "wma", "aac"]
     def __init__(self, filename, is_mk1_data = False):
         self._data = {}
@@ -62,7 +62,7 @@ class Kdata():
             self._data["vocal"] = vocal
             self._data["background"] = background
         filetype = filename[-3:]
-        if "wav" == filetype:
+        if "wav" == filetype:     
             wave_data, filename, sample_width = self.read_wav(filename)
         elif filetype in self.supported_file_types:
             new_filename = self._convert_filename(filename)
@@ -89,10 +89,9 @@ class Kdata():
     def read_wav(self, filename):
         # Check properties of the wave file
         wav_file = wave.open(filename)
-        wav_properties = {"frame_rate": wav_file.getframerate(),
-                          "channels": wav_file.getnchannels(),
-                          "no_frames": wav_file.getnframes()}
-
+        wav_properties = {"frame_rate": wav_file.getframerate() / 1000,
+                          "channels": wav_file.getnchannels()}
+  
         if self.required_properties == wav_properties:
             wave_data = wavfile.read(filename)
             filename = filename
@@ -130,7 +129,7 @@ class Kdata():
         filename = new_filename
         return wave_data, filename, sample_width
     
-    def play(self, data_type="input"):
+    def play(self, data_type="input"):    
         if data_type != "input" and self.is_mk1_data:
             raise "Error, {0} does not exist".format(data_type)
 
@@ -153,11 +152,20 @@ class Kdata():
 
     def save(self, filename, data_type="input"):
         from scipy.io import wavfile
-        rate = 22050
+        rate = self.required_properties["frame_rate"] * 1000
         wavfile.write(filename, rate, self._data[data_type])
 
     def view(self, data_type="input"):
         from utils.pyNumpyViewer import pyNumpyViewer
         pyNumpyViewer(self._data[data_type])
+
+    def plot(self, data_type="input"):
+        import numpy as np
+        x = self._data[data_type]
+        t = np.arange(1, x.shape[0] + 1)/16000.00
+        plt.plot(t, x)
+        plt.ylabel("Amplitude")
+        plt.xlabel("Time (secs)")
+        plt.show()
 
 # data.py ends here

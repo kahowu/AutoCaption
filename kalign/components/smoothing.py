@@ -18,7 +18,8 @@ class Smoothing(Kcomponent):
     '''
     docs
     '''
-    def __init__(self, threshold=0.01, yst=20, K=5):
+    def __init__(self, debug=False, threshold=0.10, yst=20, K=5):
+        self.debug = debug
         self.threshold = threshold
         self.yst = yst
         self.K = K
@@ -35,13 +36,21 @@ class Smoothing(Kcomponent):
 
         g.maxflow()
         sgm = g.get_grid_segments(nodeids) # is max flow connected to source
-        #xT_smooth = np.int_(sgm)
+                
+        if self.debug:
+            t = np.arange(1, x.shape[0] + 1)/16000.00
+            plt.subplot(2, 1, 1)
+            plt.plot(t, x)
+            plt.xlabel("Time (s)")
+            plt.ylabel("Amplitude")
+            plt.subplot(2, 1, 2)
+            plt.plot(t, sgm, linewidth=3)
+            plt.xlabel("Time (s)")
+            plt.ylabel("Vocal gate")
+            plt.show()
+            
         x[np.logical_not(sgm)] = 0
-        
-        # t = range(1, x.shape[0] + 1)
-        # plt.plot(t, sgm, linewidth=3)
-        # plt.show()
-        # import pdb; pdb.set_trace();
+  
         kdata["smoothedVocal"] = x
              
     def cost(self, t):

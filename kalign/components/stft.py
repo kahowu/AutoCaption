@@ -13,7 +13,7 @@ from component import Kcomponent
 from scipy import hamming
 from scipy import fft
 import numpy as np
-from utils.pyNumpyViewer import pyNumpyViewer
+from pyNumpyViewer import pyNumpyViewer
 
 class Stft(Kcomponent):
     '''

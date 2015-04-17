@@ -6,7 +6,7 @@ from components.smoothing import Smoothing
 
 
 if __name__ == "__main__":
-    filename = "../data/test.wav"
+    filename = "../data/bob_dyl.mp3"
     kdata = Kdata(filename)
     stftComponent = Stft()
     stftComponent.run(kdata)
@@ -24,5 +24,5 @@ if __name__ == "__main__":
     # kdata.play("instrumental")
 
     # print "playing vocal"
-    # kdata.play("smoothedVocal")
-    kdata.save("smooth_bob.wav", "smoothedVocal")
+    #kdata.play()
+    #kdata.save("smooth/smooth_bob.wav", "smoothedVocal")

@@ -14,7 +14,7 @@ from scipy import hamming
 from scipy import fft
 from scipy import real
 import numpy as np
-from utils.pyNumpyViewer import pyNumpyViewer
+from pyNumpyViewer import pyNumpyViewer
 
 class Istft(Kcomponent):
     '''

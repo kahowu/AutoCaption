@@ -8,8 +8,8 @@
 # Version: 
 # Package-Requires: ()
 
-from data import Kdatabase
-from data import Kdata
+from ..data import Kdatabase
+from ..data import Kdata
 
 # Code:
 class Kcomponent():
