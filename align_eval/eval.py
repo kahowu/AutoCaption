@@ -38,6 +38,7 @@ def evaluate(expected_timestamp_filepath, actual_timestamp_filepathpath):
 
         e_word, e_start, e_end = read_timestamp_line(e_lines[i].strip("\n"))
         a_word, a_start, a_end = read_timestamp_line(a_lines[i].strip("\n"))
+
         # if a_word != e_word:
         #     print 'mismatch word', a_word, e_word
 
@@ -45,7 +46,6 @@ def evaluate(expected_timestamp_filepath, actual_timestamp_filepathpath):
         total_duration += word_duration
 
         if a_start == None or e_start == None:
-
             overlap_duration = 0
         else:
             overlap_duration = overlap(e_start, e_end, a_start, a_end)
@@ -86,11 +86,35 @@ def audacity_to_timestamp(in_filepath, out_filepath):
     in_file.close()
     out_file.close()
 
+def textgrid_to_timestamp(in_filepath, out_filepath):
+    in_file = open(in_filepath, 'r')
+    out_file = open(out_filepath, 'w')
+
+    lines = in_file.readlines()
+    lines = map(lambda x: x.strip('\n'), lines)
+    start_index = lines.index('\titem [2]:')
+    lines = lines[start_index + 6:]
+    for i in range(0, len(lines), 4):
+        xmin = int(float(lines[i + 1][11:])*1000)
+        xmax = int(float(lines[i + 2][11:])*1000)
+        word = lines[i + 3][12:-1]
+        if word not in ["sil", 'sp']:
+            out_line = "{}\t{}:{}\n".format(word.lower(), xmin, xmax)
+            #print out_line
+            out_file.write(out_line)
+    in_file.close()
+    out_file.close()
+    #print(lines)
+
 if __name__ == '__main__':
+    textgrid = False
+
     names = ['segment_01', 'segment_02', 'segment_03', 'segment_04', 'segment_05', \
         'segment_06', 'segment_07', 'segment_08', 'segment_09', 'segment_10']
 
-    #names = ['bw', 'bw1', 'cp1', 'cp2','cp3','cp4', 'ld1','oasis', 'oasis2', 'oasis3']
+    root = '/Users/Frank/Desktop/CSC412/project/model/Acapella'
+
+    names = ['bw', 'bw1', 'cp1', 'cp2','cp3','cp4', 'ld1','oasis', 'oasis2', 'oasis3']
 
     overlaps_percentage = []
     corrects = []
@@ -98,15 +122,20 @@ if __name__ == '__main__':
     words = []
 
     for name in names:
+        actual_fp = root + '/output/{}_timestamp.txt'.format(name)
 
-        in_fp = '../../../Acapella/audacity_marker/{}_timestamp.txt'.format(name)
-        out_fp = '../../../Acapella/audacity_output/{}_timestamp.txt'.format(name)
-        actual_fp = '../../../Acapella/output/{}_timestamp.txt'.format(name)
+        aud_in_fp = root + '/audacity_marker/{}_timestamp.txt'.format(name)
+        aud_out_fp = root + '/audacity_output/{}_timestamp.txt'.format(name)
+        audacity_to_timestamp(aud_in_fp, aud_out_fp)
 
         #print(os.getcwd())
-        audacity_to_timestamp(in_fp, out_fp)
+        if textgrid:
+            text_grid_in_fp = root + '/textgrid_marker/{}.TextGrid'.format(name)
+            actual_fp = root + '/textgrid_output/{}_timestamp.txt'.format(name)
+            textgrid_to_timestamp(text_grid_in_fp, actual_fp)
+
         overlap_percentage, correct_count, word_count\
-            = evaluate(out_fp, actual_fp)
+            = evaluate(aud_out_fp, actual_fp)
 
         correct_percentage = correct_count/word_count
 
