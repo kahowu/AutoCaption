@@ -1,0 +1,29 @@
+swinging	300:760
+in	790:880
+the	880:1030
+backyard	1180:1880
+pull	1880:2040
+up	2510:2670
+in	2670:2840
+your	2840:3030
+fast	3030:3610
+car	3670:4090
+whistling
+my
+name
+open	8240:8670
+up	8670:8750
+a	8750:8880
+beer	8880:9540
+and	9570:9760
+you	9760:9860
+say	9860:10380
+get
+over
+here
+and	11180:11490
+play	11520:11850
+a	12090:12570
+video	12940:12970
+game
+WER: 0.25

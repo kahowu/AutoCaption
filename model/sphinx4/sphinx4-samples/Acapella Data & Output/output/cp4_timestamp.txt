@@ -1,0 +1,13 @@
+but	0:40
+if	40:240
+you	240:480
+never	480:630
+try	1100:1170
+you'll	2240:2270
+never	2270:2420
+know	3040:4720
+just
+what
+you're
+worth
+WER: 0.33333333333333337

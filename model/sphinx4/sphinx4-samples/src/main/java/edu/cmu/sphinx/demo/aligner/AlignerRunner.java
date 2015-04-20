@@ -1,13 +1,5 @@
 /*
- * Copyright 1999-2013 Carnegie Mellon University.
- * Portions Copyright 2004 Sun Microsystems, Inc.
- * Portions Copyright 2004 Mitsubishi Electric Research Laboratories.
- * All Rights Reserved.  Use is subject to license terms.
- *
- * See the file "license.terms" for information on usage and
- * redistribution of this file, and for a DISCLAIMER OF ALL
- * WARRANTIES.
- *
+ * @Author: Jeff Wu and David Lu
  */
 package edu.cmu.sphinx.demo.aligner;
 
@@ -18,7 +10,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.List;
 
 import edu.cmu.sphinx.alignment.LongTextAligner;
@@ -43,8 +34,6 @@ import edu.cmu.sphinx.result.WordResult;
 public class AlignerRunner {
     private static final String ACOUSTIC_MODEL_PATH =
             "resource:/edu/cmu/sphinx/models/en-us/en-us";
-//    private static final String DICTIONARY_PATH =
-//            "resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict";
     
     private static double Average(List <Double> results) {
     	  Double sum = 0.0;
@@ -61,18 +50,13 @@ public class AlignerRunner {
         
     	File dictionaryFile = new File("dictionary/cmudict-en-us.dict");
     	String dictionaryPath = new URL("file:" + dictionaryFile.getAbsolutePath()).toString();
-//    	List<String> filebases = new ArrayList<String>(Arrays.asList("01_blowin_in_the_wind"));
+//    	List<String> filebases = new ArrayList<String>(Arrays.asList("filename"));
         List<String> filebases = listFilebases();
         List<Double> results = new ArrayList<Double>();
-        
         for (String filebase : filebases) {
         	String songFilepath = "music/" + filebase + "_vocal.wav";
         	String lyricsFilepath = "lyrics/" + filebase + "_lyrics.txt";
             String outputFilepath = "output/" + filebase + "_timestamp.txt";           
-//            System.out.println(songFilepath);
-//            System.out.println(lyricsFilepath);
-//            System.out.println(outputFilepath);
-            
             Double result = align(songFilepath, lyricsFilepath, outputFilepath, dictionaryPath);
             results.add(result); 
             System.out.println("The WER for the song " + filebase + " is " +  result);
@@ -98,25 +82,33 @@ public class AlignerRunner {
     }
     
     public static double align(String songFilepath, String lyricsFilepath, String outputFilepath, String dictionaryPath) throws IOException {
-    	URL audioUrl;       
-        String lyrics;     
+    	URL audioUrl;
+        
+        String lyrics;
+        
     	File songFile = new File(songFilepath);
         audioUrl = new URL("file:" + songFile.getAbsolutePath());
         lyrics = new String(Files.readAllBytes(Paths.get(lyricsFilepath)));
         String acousticModelPath = ACOUSTIC_MODEL_PATH;
         String g2pPath = null;
+       
         SpeechAligner aligner =
                 new SpeechAligner(acousticModelPath, dictionaryPath, g2pPath);
+
         List<WordResult> results = aligner.align(audioUrl, lyrics);
         List<String> stringResults = new ArrayList<String>();
         for (WordResult wr : results) {
             stringResults.add(wr.getWord().getSpelling());
         }
+        
         LongTextAligner textAligner =
                 new LongTextAligner(stringResults, 2);
         List<String> words = aligner.getWordExpander().expand(lyrics);
+
         int[] aid = textAligner.align(words);
+        
     	PrintWriter writer = new PrintWriter(outputFilepath, "UTF-8");
+        
         int totalCorrect = 0;
         int lastId = -1;
 
@@ -151,7 +143,6 @@ public class AlignerRunner {
                         .getSpelling(), result.getTimeFrame());
             }
         }
-        
         return (1 - (totalCorrect * 1.0)/aid.length); 
     }
 }

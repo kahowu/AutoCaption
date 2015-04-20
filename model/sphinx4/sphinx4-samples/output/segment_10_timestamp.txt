@@ -1,0 +1,27 @@
+if	80:310
+your	430:1590
+time	2390:2920
+to	2920:3030
+you	3440:7910
+is
+worth
+saving
+then
+you
+better
+start
+swimming
+or
+you'll
+sink
+like
+_a
+stone
+for
+the
+times
+they
+are
+_a
+changing
+WER: 0.8076923076923077
